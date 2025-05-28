@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stableford Scorecard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="header">
+        STABLEFORD GOLF SCORECARD
+        <div class="theme-selector">
+            <select id="themeSelect" onchange="applyTheme(this.value)">
+                <option value="classic">🏌️ Classic</option>
+                <option value="modern">🌊 Modern</option>
+                <option value="dark">🌙 Dark</option>
+                <option value="sporty">🔥 Sporty</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="section">
+        <div class="course-info">
+            <label>Course: 
+                <input type="text" id="courseName" placeholder="Enter course name">
+            </label>
+            <label>Date: 
+                <input type="date" id="gameDate">
+            </label>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="player-management">
+            <div class="player-count">Players: <span id="playerCount">4</span></div>
+            <div class="player-controls">
+                <button class="btn btn-primary" id="addPlayer" onclick="addPlayer()">+ Add Player</button>
+                <button class="btn btn-danger" id="removePlayer" onclick="removePlayer()">- Remove Player</button>
+            </div>
+        </div>
+        
+        <div id="playerInputsContainer">
+            <div class="player-inputs" id="playerInputs"></div>
+            <div class="handicap-inputs" id="handicapInputs"></div>
+        </div>
+    </div>
+
+    <div class="score-table">
+        <table id="scorecard">
+            <thead id="scoreHead"></thead>
+            <tbody id="scoreBody"></tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <h3 style="color: var(--main-header-bg); margin-top: 0;">📊 SUMMARY</h3>
+        <table id="summary">
+            <thead id="summaryHead"></thead>
+            <tbody id="summaryBody"></tbody>
+        </table>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
