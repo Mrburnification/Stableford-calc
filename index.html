@@ -5,72 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stableford Scorecard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="header">
-        <div>STABLEFORD GOLF SCORECARD</div>
-        <div class="theme-selector">
-            <select id="themeSelect" onchange="applyTheme(this.value)">
-                <option value="classic">🏌️ Classic</option>
-                <option value="modern">🌊 Modern</option>
-                <option value="dark">🌙 Dark</option>
-                <option value="sporty">🔥 Sporty</option>
-            </select>
-            <button id="resetButton" class="btn btn-danger" onclick="confirmReset()">
-                <i class="fas fa-trash-alt"></i> Reset All
-            </button>
-        </div>
-    </div>
-    
-    <div class="section">
-        <div class="course-info">
-            <label>Course: 
-                <input type="text" id="courseName" placeholder="Enter course name">
-            </label>
-            <label>Date: 
-                <input type="date" id="gameDate">
-            </label>
-        </div>
-    </div>
-
-    <div class="section">
-        <div class="player-management">
-            <div class="player-count">Players: <span id="playerCount">4</span></div>
-            <div class="player-controls">
-                <button class="btn btn-primary" id="addPlayer" onclick="addPlayer()">
-                    <i class="fas fa-user-plus"></i> Add Player
-                </button>
-                <button class="btn btn-danger" id="removePlayer" onclick="removePlayer()">
-                    <i class="fas fa-user-minus"></i> Remove Player
+    <div class="container">
+        <div class="header">
+            <div>STABLEFORD GOLF SCORECARD</div>
+            <div class="theme-selector">
+                <select id="themeSelect" onchange="applyTheme(this.value)">
+                    <option value="classic">🏌️ Classic</option>
+                    <option value="modern">🌊 Modern</option>
+                    <option value="dark">🌙 Dark</option>
+                    <option value="sporty">🔥 Sporty</option>
+                </select>
+                <button id="resetButton" class="btn btn-danger" onclick="confirmReset()">
+                    <i class="fas fa-trash-alt"></i> Reset All
                 </button>
             </div>
         </div>
         
-        <div id="playerInputsContainer">
-            <div class="player-inputs" id="playerInputs"></div>
-            <div class="handicap-inputs" id="handicapInputs"></div>
+        <div class="section">
+            <div class="course-info">
+                <label>Course: 
+                    <input type="text" id="courseName" placeholder="Enter course name">
+                </label>
+                <label>Date: 
+                    <input type="date" id="gameDate">
+                </label>
+                <span>Alec is a noob</span>
+            </div>
         </div>
-    </div>
 
-    <div class="score-table-container">
-        <table id="scorecard">
-            <thead id="scoreHead"></thead>
-            <tbody id="scoreBody"></tbody>
-        </table>
-    </div>
-    <div class="mobile-hint">
-        <i class="fas fa-arrows-alt-h"></i> Scroll horizontally to see all columns
-    </div>
+        <div class="section">
+            <div class="player-management">
+                <div class="player-count">Players: <span id="playerCount">4</span></div>
+                <div class="player-controls">
+                    <button class="btn btn-primary" id="addPlayer" onclick="addPlayer()">
+                        <i class="fas fa-user-plus"></i> Add Player
+                    </button>
+                    <button class="btn btn-danger" id="removePlayer" onclick="removePlayer()">
+                        <i class="fas fa-user-minus"></i> Remove Player
+                    </button>
+                </div>
+            </div>
+            
+            <div id="playerInputsContainer">
+                <div class="player-inputs" id="playerInputs"></div>
+                <div class="handicap-inputs" id="handicapInputs"></div>
+            </div>
+        </div>
 
-    <div class="summary-section">
-        <h3><i class="fas fa-chart-bar"></i> SUMMARY</h3>
-        <div class="summary-table-container">
-            <table id="summary">
-                <thead id="summaryHead"></thead>
-                <tbody id="summaryBody"></tbody>
+        <div class="score-table-container">
+            <table id="scorecard">
+                <thead id="scoreHead"></thead>
+                <tbody id="scoreBody"></tbody>
             </table>
         </div>
+        <div class="mobile-hint">
+            <i class="fas fa-arrows-alt-h"></i> Scroll horizontally to see all columns
+        </div>
+
+        <div class="summary-section">
+            <h3><i class="fas fa-chart-bar"></i> SUMMARY</h3>
+            <div class="summary-table-container">
+                <table id="summary">
+                    <thead id="summaryHead"></thead>
+                    <tbody id="summaryBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="export-container">
+            <button id="exportButton" class="btn btn-success">
+                <i class="fas fa-camera"></i> Save Scorecard as Image
+            </button>
+        </div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <div>Generating Scorecard Image...</div>
     </div>
 
     <script src="script.js"></script>

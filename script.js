@@ -482,4 +482,56 @@ function resetState() {
 window.addEventListener('beforeunload', saveState);
 
 // Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', init); 
+document.addEventListener('DOMContentLoaded', init);
+
+function saveAsImage() {
+    const overlay = document.getElementById('loadingOverlay');
+    const container = document.querySelector('.container');
+    
+    if (!container) {
+        console.error('Container element not found');
+        alert('Error: Could not find the scorecard container');
+        return;
+    }
+    
+    overlay.classList.remove('hidden');
+    
+    // Use html2canvas to capture the container
+    html2canvas(container, {
+        scale: 2, // Higher quality
+        useCORS: true, // Enable CORS for images
+        logging: false, // Disable logging
+        backgroundColor: '#ffffff' // White background
+    }).then(canvas => {
+        try {
+            // Create a temporary link to download the image
+            const link = document.createElement('a');
+            const courseName = state.course || 'golf-scorecard';
+            const date = state.date || new Date().toISOString().split('T')[0];
+            const filename = `${courseName}-${date}.png`.replace(/[^a-z0-9.-]/gi, '-');
+            
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (error) {
+            console.error('Error creating download link:', error);
+            alert('Error saving image. Please try again.');
+        } finally {
+            overlay.classList.add('hidden');
+        }
+    }).catch(error => {
+        console.error('Error generating image:', error);
+        overlay.classList.add('hidden');
+        alert('Error generating image. Please try again.');
+    });
+}
+
+// Add event listener for the export button
+document.addEventListener('DOMContentLoaded', function() {
+    const exportButton = document.getElementById('exportButton');
+    if (exportButton) {
+        exportButton.addEventListener('click', saveAsImage);
+    }
+}); 
