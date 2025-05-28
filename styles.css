@@ -249,10 +249,35 @@ body.sporty {
     --sheet-bg: #f5f6fa;
 }
 
+/* Table container styles */
+.table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -20px;
+    padding: 0 20px;
+    width: calc(100% + 40px);
+}
+
+.table-container table {
+    width: 100%;
+    table-layout: auto;
+    white-space: nowrap;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
+    /* Cancel any table-stacking rules */
+    table, thead, tbody, tr, th, td {
+        display: table;
+    }
+
     .course-info {
         grid-template-columns: 1fr;
+        gap: 15px;
     }
     
     .player-management {
@@ -261,23 +286,29 @@ body.sporty {
         text-align: center;
     }
     
-    .score-table {
-        font-size: 0.85em;
-        margin: 0 -20px; /* Negative margin to allow full width */
-        width: calc(100% + 40px); /* Compensate for negative margin */
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    .player-controls {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
     }
     
-    .score-table table {
-        min-width: 100%;
-        table-layout: fixed;
+    .player-controls button {
+        min-width: 48px;
+        min-height: 48px;
+        padding: 12px;
+        font-size: 1em;
     }
     
-    th, td {
-        padding: 8px 4px;
-        min-width: 45px;
-        white-space: nowrap;
+    .player-inputs, .handicap-inputs {
+        display: grid;
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .player-inputs input, .handicap-inputs input {
+        min-height: 48px;
+        padding: 12px;
+        font-size: 1em;
     }
     
     .header {
@@ -296,58 +327,44 @@ body.sporty {
     .theme-selector select,
     .theme-selector .btn {
         width: 100%;
+        min-height: 48px;
+        padding: 12px;
     }
 
-    /* Force table to not be like tables anymore */
-    .score-table table, 
-    .score-table thead, 
-    .score-table tbody, 
-    .score-table th, 
-    .score-table td, 
-    .score-table tr { 
-        display: block; 
+    /* Table styles for mobile */
+    th, td {
+        padding: 12px 8px;
+        min-width: 45px;
     }
 
-    /* Hide table headers (but not display: none;, for accessibility) */
-    .score-table thead tr { 
+    /* Add scroll indicators */
+    .table-container::after {
+        content: '';
         position: absolute;
-        top: -9999px;
-        left: -9999px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 30px;
+        background: linear-gradient(to right, transparent, var(--sheet-bg));
+        pointer-events: none;
+        opacity: 0.8;
     }
 
-    .score-table tr { 
-        border: 1px solid var(--border-color);
-        margin-bottom: 10px;
-    }
-
-    .score-table td { 
-        /* Behave  like a "row" */
-        border: none;
-        border-bottom: 1px solid var(--border-color);
-        position: relative;
-        padding-left: 50%;
-        text-align: right;
-    }
-
-    .score-table td:before { 
-        /* Now like a table header */
+    .table-container::before {
+        content: '';
         position: absolute;
-        /* Top/left values mimic padding */
-        top: 6px;
-        left: 6px;
-        width: 45%;
-        padding-right: 10px;
-        white-space: nowrap;
-        text-align: left;
-        font-weight: bold;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 30px;
+        background: linear-gradient(to left, transparent, var(--sheet-bg));
+        pointer-events: none;
+        opacity: 0.8;
     }
+}
 
-    /* Label the data */
-    .score-table td:nth-of-type(1):before { content: "Hole"; }
-    .score-table td:nth-of-type(2):before { content: "Par"; }
-    .score-table td:nth-of-type(3):before { content: "SI"; }
-    .score-table td:nth-of-type(4):before { content: "P1 Gross"; }
-    .score-table td:nth-of-type(5):before { content: "P1 Net"; }
-    .score-table td:nth-of-type(6):before { content: "P1 Pts"; }
-    /* Add more labels as needed based on player count */
+/* Ensure viewport meta tag is respected */
+@viewport {
+    width: device-width;
+    zoom: 1.0;
 } 
