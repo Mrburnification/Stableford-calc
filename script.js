@@ -5,6 +5,7 @@ let state = {
     handicaps: [0, 0, 0, 0],
     scores: Array(18).fill().map(() => Array(4).fill('')),
     strokeIndexes: [10,8,18,2,12,16,6,4,14,11,17,9,1,13,15,5,7,3], // Default SI values
+    pars: [4,4,3,5,4,3,4,5,4,4,3,4,5,4,3,4,4,5], // Default par values
     theme: 'classic',
     playerCount: 4
 };
@@ -30,6 +31,7 @@ function init() {
             handicaps: [0, 0, 0, 0],
             scores: Array(18).fill().map(() => Array(4).fill('')),
             strokeIndexes: [10,8,18,2,12,16,6,4,14,11,17,9,1,13,15,5,7,3],
+            pars: [4,4,3,5,4,3,4,5,4,4,3,4,5,4,3,4,4,5],
             theme: 'classic',
             playerCount: 4
         };
@@ -144,7 +146,10 @@ function createScoreTable() {
         const tr = document.createElement('tr');
         let rowHtml = `
             <td><strong>${hole + 1}</strong></td>
-            <td><strong>${defaultPars[hole]}</strong></td>
+            <td><input type="number" min="3" max="6" 
+                 class="par" data-hole="${hole}" 
+                 value="${state.pars[hole] || ''}" 
+                 placeholder="Par"></td>
             <td><input type="number" min="1" max="18" 
                  class="stroke-index" data-hole="${hole}" 
                  value="${state.strokeIndexes[hole] || ''}" 
@@ -207,8 +212,9 @@ function calculateNetScore(gross, handicap, si) {
     return parseInt(gross) - strokes;
 }
 
-function calculatePoints(net, par) {
+function calculatePoints(net, hole) {
     if (net === '') return '';
+    const par = state.pars[hole];
     const diff = net - par;
     if (diff <= -4) return 6;
     if (diff <= -3) return 5;
@@ -239,7 +245,7 @@ function updateCalculations() {
             
             const gross = grossInput.value;
             const net = calculateNetScore(gross, state.handicaps[p], si);
-            const points = calculatePoints(net, defaultPars[hole]);
+            const points = calculatePoints(net, hole);
             
             netCell.textContent = net || '';
             pointsCell.textContent = points || '';
@@ -324,7 +330,7 @@ function calculateTotalPoints(player, startHole, endHole) {
         
         const si = state.strokeIndexes[startHole + index] || '';
         const net = calculateNetScore(gross, state.handicaps[player], si);
-        return sum + (calculatePoints(net, defaultPars[startHole + index]) || 0);
+        return sum + (calculatePoints(net, startHole + index) || 0);
     }, 0);
 }
 
@@ -371,6 +377,10 @@ function setupEventListeners() {
             const hole = parseInt(e.target.dataset.hole);
             state.strokeIndexes[hole] = e.target.value;
             updateCalculations();
+        } else if (e.target.classList.contains('par')) {
+            const hole = parseInt(e.target.dataset.hole);
+            state.pars[hole] = parseInt(e.target.value) || 4;
+            updateCalculations();
         } else if (e.target.id === 'courseName') {
             state.course = e.target.value;
             saveState();
@@ -389,14 +399,92 @@ function applyTheme(theme) {
 }
 
 function saveState() {
-    // Can't use localStorage in Claude artifacts - would normally save here
-    console.log('State would be saved:', state);
+    try {
+        localStorage.setItem('stablefordState', JSON.stringify(state));
+        console.log('State saved successfully');
+    } catch (error) {
+        console.error('Error saving state:', error);
+    }
 }
 
 function loadState() {
-    // Can't use localStorage in Claude artifacts - would normally load here
-    console.log('State would be loaded');
+    try {
+        const savedState = localStorage.getItem('stablefordState');
+        if (savedState) {
+            state = JSON.parse(savedState);
+            // Ensure arrays are properly initialized
+            if (!state.pars) state.pars = [4,4,3,5,4,3,4,5,4,4,3,4,5,4,3,4,4,5];
+            if (!state.strokeIndexes) state.strokeIndexes = [10,8,18,2,12,16,6,4,14,11,17,9,1,13,15,5,7,3];
+            if (!state.scores) state.scores = Array(18).fill().map(() => Array(4).fill(''));
+            if (!state.players) state.players = ['', '', '', ''];
+            if (!state.handicaps) state.handicaps = [0, 0, 0, 0];
+            if (!state.playerCount) state.playerCount = 4;
+            if (!state.theme) state.theme = 'classic';
+            
+            // Update UI elements
+            document.getElementById('courseName').value = state.course || '';
+            document.getElementById('gameDate').value = state.date || '';
+            document.getElementById('themeSelect').value = state.theme;
+            
+            console.log('State loaded successfully');
+        }
+    } catch (error) {
+        console.error('Error loading state:', error);
+        // Initialize with default values if there's an error
+        state = {
+            course: '',
+            date: '',
+            players: ['', '', '', ''],
+            handicaps: [0, 0, 0, 0],
+            scores: Array(18).fill().map(() => Array(4).fill('')),
+            strokeIndexes: [10,8,18,2,12,16,6,4,14,11,17,9,1,13,15,5,7,3],
+            pars: [4,4,3,5,4,3,4,5,4,4,3,4,5,4,3,4,4,5],
+            theme: 'classic',
+            playerCount: 4
+        };
+    }
 }
+
+function confirmReset() {
+    if (confirm('Are you sure you want to reset all data? This action cannot be undone.')) {
+        resetState();
+    }
+}
+
+function resetState() {
+    state = {
+        course: '',
+        date: '',
+        players: ['', '', '', ''],
+        handicaps: [0, 0, 0, 0],
+        scores: Array(18).fill().map(() => Array(4).fill('')),
+        strokeIndexes: [10,8,18,2,12,16,6,4,14,11,17,9,1,13,15,5,7,3],
+        pars: [4,4,3,5,4,3,4,5,4,4,3,4,5,4,3,4,4,5],
+        theme: 'classic',
+        playerCount: 4
+    };
+    
+    // Clear localStorage
+    localStorage.removeItem('stablefordState');
+    
+    // Reset UI
+    document.getElementById('courseName').value = '';
+    document.getElementById('gameDate').value = '';
+    document.getElementById('themeSelect').value = 'classic';
+    
+    // Reinitialize the UI
+    updatePlayerInputs();
+    createScoreTable();
+    createSummary();
+    setupEventListeners();
+    applyTheme('classic');
+    updatePlayerControls();
+    
+    console.log('State reset to defaults');
+}
+
+// Add event listener for beforeunload to save state
+window.addEventListener('beforeunload', saveState);
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', init); 
