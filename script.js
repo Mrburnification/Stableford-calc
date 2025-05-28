@@ -1,7 +1,7 @@
 let state = {
     course: '',
     date: '',
-    players: ['', '', '', ''],
+    players: ['Player 1', 'Player 2', 'Player 3', 'Player 4'],
     handicaps: [0, 0, 0, 0],
     scores: Array(18).fill().map(() => Array(4).fill('')),
     strokeIndexes: [10,8,18,2,12,16,6,4,14,11,17,9,1,13,15,5,7,3], // Default SI values
@@ -27,7 +27,7 @@ function init() {
         state = {
             course: '',
             date: '',
-            players: ['', '', '', ''],
+            players: ['Player 1', 'Player 2', 'Player 3', 'Player 4'],
             handicaps: [0, 0, 0, 0],
             scores: Array(18).fill().map(() => Array(4).fill('')),
             strokeIndexes: [10,8,18,2,12,16,6,4,14,11,17,9,1,13,15,5,7,3],
@@ -45,7 +45,7 @@ function init() {
 function addPlayer() {
     if (state.playerCount < 8) {
         state.playerCount++;
-        state.players.push('');
+        state.players.push(`Player ${state.playerCount}`);
         state.handicaps.push(0);
         
         // Extend scores array for new player
@@ -85,27 +85,22 @@ function updatePlayerControls() {
 }
 
 function updatePlayerInputs() {
-    const playerInputs = document.getElementById('playerInputs');
-    const handicapInputs = document.getElementById('handicapInputs');
-    
-    // Set grid columns based on player count
-    const columns = Math.min(state.playerCount, 4);
-    playerInputs.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
-    handicapInputs.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
-    
-    playerInputs.innerHTML = '';
-    handicapInputs.innerHTML = '';
+    const container = document.getElementById('playerInputsContainer');
+    container.innerHTML = '';
     
     for (let i = 0; i < state.playerCount; i++) {
-        // Player name input
-        const playerDiv = document.createElement('div');
-        playerDiv.innerHTML = `<input type="text" placeholder="Player ${i + 1}" class="player-name" data-player="${i}" value="${state.players[i] || ''}">`;
-        playerInputs.appendChild(playerDiv);
-        
-        // Handicap input
-        const handicapDiv = document.createElement('div');
-        handicapDiv.innerHTML = `<input type="number" min="0" max="54" value="${state.handicaps[i] || 0}" class="handicap" data-player="${i}" placeholder="HCP">`;
-        handicapInputs.appendChild(handicapDiv);
+        const playerRow = document.createElement('div');
+        playerRow.className = 'player-row';
+        playerRow.innerHTML = `
+            <input type="text" placeholder="Player ${i + 1}" 
+                class="player-name" data-player="${i}" 
+                value="${state.players[i] || ''}">
+            <input type="number" min="0" max="54" 
+                class="handicap" data-player="${i}" 
+                value="${state.handicaps[i] || 0}" 
+                placeholder="HCP">
+        `;
+        container.appendChild(playerRow);
     }
 }
 
@@ -193,11 +188,11 @@ function createSummary() {
     summaryHead.innerHTML = `
         <tr class="header-row">
             <th>Player</th>
-            <th>Front 9 Gross</th>
-            <th>Back 9 Gross</th>
-            <th>Total Gross</th>
-            <th>Front 9 Pts</th>
-            <th>Back 9 Pts</th>
+            <th>Front 9</th>
+            <th>Back 9</th>
+            <th>Total</th>
+            <th>Front Pts</th>
+            <th>Back Pts</th>
             <th>Total Pts</th>
             <th>Position</th>
         </tr>
@@ -416,7 +411,7 @@ function loadState() {
             if (!state.pars) state.pars = [4,4,3,5,4,3,4,5,4,4,3,4,5,4,3,4,4,5];
             if (!state.strokeIndexes) state.strokeIndexes = [10,8,18,2,12,16,6,4,14,11,17,9,1,13,15,5,7,3];
             if (!state.scores) state.scores = Array(18).fill().map(() => Array(4).fill(''));
-            if (!state.players) state.players = ['', '', '', ''];
+            if (!state.players) state.players = ['Player 1', 'Player 2', 'Player 3', 'Player 4'];
             if (!state.handicaps) state.handicaps = [0, 0, 0, 0];
             if (!state.playerCount) state.playerCount = 4;
             if (!state.theme) state.theme = 'classic';
@@ -434,7 +429,7 @@ function loadState() {
         state = {
             course: '',
             date: '',
-            players: ['', '', '', ''],
+            players: ['Player 1', 'Player 2', 'Player 3', 'Player 4'],
             handicaps: [0, 0, 0, 0],
             scores: Array(18).fill().map(() => Array(4).fill('')),
             strokeIndexes: [10,8,18,2,12,16,6,4,14,11,17,9,1,13,15,5,7,3],
@@ -455,7 +450,7 @@ function resetState() {
     state = {
         course: '',
         date: '',
-        players: ['', '', '', ''],
+        players: ['Player 1', 'Player 2', 'Player 3', 'Player 4'],
         handicaps: [0, 0, 0, 0],
         scores: Array(18).fill().map(() => Array(4).fill('')),
         strokeIndexes: [10,8,18,2,12,16,6,4,14,11,17,9,1,13,15,5,7,3],
