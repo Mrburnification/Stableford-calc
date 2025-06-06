@@ -88,6 +88,53 @@
         <div>Generating Scorecard Image...</div>
     </div>
 
+    <!-- Number Selection Interface -->
+    <div class="overlay" id="overlay"></div>
+    
+    <!-- Par Selection Number Pad -->
+    <div class="number-pad" id="parNumberPad">
+        <div class="number-pad-header">
+            <div class="drag-handle"></div>
+            <div class="number-pad-title">Select Par</div>
+        </div>
+        <div class="numbers-grid">
+            <button class="number-button" data-number="3">
+                <span class="number">3</span>
+                <span class="par-label">PAR</span>
+            </button>
+            <button class="number-button" data-number="4">
+                <span class="number">4</span>
+                <span class="par-label">PAR</span>
+            </button>
+            <button class="number-button" data-number="5">
+                <span class="number">5</span>
+                <span class="par-label">PAR</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- SI Selection Number Pad -->
+    <div class="number-pad" id="siNumberPad">
+        <div class="number-pad-header">
+            <div class="drag-handle"></div>
+            <div class="number-pad-title">Select Stroke Index</div>
+        </div>
+        <div class="si-grid">
+            <!-- Will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Gross Score Number Pad -->
+    <div class="number-pad" id="grossNumberPad">
+        <div class="number-pad-header">
+            <div class="drag-handle"></div>
+            <div class="number-pad-title">Select Score</div>
+        </div>
+        <div class="gross-grid">
+            <!-- Will be populated by JavaScript -->
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html> 

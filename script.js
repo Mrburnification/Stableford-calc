@@ -15,6 +15,7 @@ const defaultPars = [4,4,3,5,4,3,4,5,4,4,3,4,5,4,3,4,4,5];
 function init() {
     try {
         loadState();
+        createNumberPads();
         updatePlayerInputs();
         createScoreTable();
         createSummary();
@@ -35,6 +36,7 @@ function init() {
             theme: 'classic',
             playerCount: 4
         };
+        createNumberPads();
         updatePlayerInputs();
         createScoreTable();
         createSummary();
@@ -352,14 +354,96 @@ function setupEventListeners() {
     // Remove existing listeners by cloning elements
     const container = document.body;
     
+    // Add number selection interface functionality
+    const overlay = document.getElementById('overlay');
+    const parNumberPad = document.getElementById('parNumberPad');
+    const siNumberPad = document.getElementById('siNumberPad');
+    const grossNumberPad = document.getElementById('grossNumberPad');
+    let activeInput = null;
+
+    // Remove any existing event listeners by cloning and replacing elements
+    const newOverlay = overlay.cloneNode(true);
+    overlay.parentNode.replaceChild(newOverlay, overlay);
+    
+    const newParNumberPad = parNumberPad.cloneNode(true);
+    parNumberPad.parentNode.replaceChild(newParNumberPad, parNumberPad);
+    
+    const newSiNumberPad = siNumberPad.cloneNode(true);
+    siNumberPad.parentNode.replaceChild(newSiNumberPad, siNumberPad);
+    
+    const newGrossNumberPad = grossNumberPad.cloneNode(true);
+    grossNumberPad.parentNode.replaceChild(newGrossNumberPad, grossNumberPad);
+
+    // Handle input clicks
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('par')) {
+            e.preventDefault();
+            activeInput = e.target;
+            newOverlay.classList.add('active');
+            newParNumberPad.classList.add('active');
+            newSiNumberPad.classList.remove('active');
+            newGrossNumberPad.classList.remove('active');
+        } else if (e.target.classList.contains('stroke-index')) {
+            e.preventDefault();
+            activeInput = e.target;
+            newOverlay.classList.add('active');
+            newSiNumberPad.classList.add('active');
+            newParNumberPad.classList.remove('active');
+            newGrossNumberPad.classList.remove('active');
+        } else if (e.target.classList.contains('gross')) {
+            e.preventDefault();
+            activeInput = e.target;
+            newOverlay.classList.add('active');
+            newGrossNumberPad.classList.add('active');
+            newParNumberPad.classList.remove('active');
+            newSiNumberPad.classList.remove('active');
+        }
+    });
+
+    // Handle number button clicks
+    document.querySelectorAll('.number-button').forEach(button => {
+        button.addEventListener('click', () => {
+            if (activeInput) {
+                const number = button.dataset.number;
+                activeInput.value = number;
+
+                if (activeInput.classList.contains('par')) {
+                    const hole = parseInt(activeInput.dataset.hole);
+                    state.pars[hole] = parseInt(number);
+                } else if (activeInput.classList.contains('stroke-index')) {
+                    const hole = parseInt(activeInput.dataset.hole);
+                    state.strokeIndexes[hole] = parseInt(number);
+                } else if (activeInput.classList.contains('gross')) {
+                    const hole = parseInt(activeInput.dataset.hole);
+                    const player = parseInt(activeInput.dataset.player);
+                    if (!state.scores[hole]) state.scores[hole] = [];
+                    state.scores[hole][player] = parseInt(number);
+                }
+
+                updateCalculations();
+                
+                // Close the number pad
+                newOverlay.classList.remove('active');
+                newParNumberPad.classList.remove('active');
+                newSiNumberPad.classList.remove('active');
+                newGrossNumberPad.classList.remove('active');
+                activeInput = null;
+            }
+        });
+    });
+
+    // Close number pad when clicking overlay
+    newOverlay.addEventListener('click', () => {
+        newOverlay.classList.remove('active');
+        newParNumberPad.classList.remove('active');
+        newSiNumberPad.classList.remove('active');
+        newGrossNumberPad.classList.remove('active');
+        activeInput = null;
+    });
+
+    // Handle other input events
     container.addEventListener('input', (e) => {
-        if (e.target.classList.contains('gross')) {
-            const hole = parseInt(e.target.dataset.hole);
-            const player = parseInt(e.target.dataset.player);
-            if (!state.scores[hole]) state.scores[hole] = [];
-            state.scores[hole][player] = e.target.value;
-            updateCalculations();
-        } else if (e.target.classList.contains('handicap')) {
+        if (e.target.classList.contains('handicap')) {
             const player = parseInt(e.target.dataset.player);
             state.handicaps[player] = parseInt(e.target.value) || 0;
             updateCalculations();
@@ -368,14 +452,6 @@ function setupEventListeners() {
             state.players[player] = e.target.value;
             updateSummary();
             saveState();
-        } else if (e.target.classList.contains('stroke-index')) {
-            const hole = parseInt(e.target.dataset.hole);
-            state.strokeIndexes[hole] = e.target.value;
-            updateCalculations();
-        } else if (e.target.classList.contains('par')) {
-            const hole = parseInt(e.target.dataset.hole);
-            state.pars[hole] = parseInt(e.target.value) || 4;
-            updateCalculations();
         } else if (e.target.id === 'courseName') {
             state.course = e.target.value;
             saveState();
@@ -496,12 +572,21 @@ function saveAsImage() {
     
     overlay.classList.remove('hidden');
     
+    // Store original scroll position
+    const originalScroll = window.scrollY;
+    
+    // Temporarily set container width to 1280px for capture
+    const originalWidth = container.style.width;
+    container.style.width = '1280px';
+    
     // Use html2canvas to capture the container
     html2canvas(container, {
-        scale: 2, // Higher quality
-        useCORS: true, // Enable CORS for images
-        logging: false, // Disable logging
-        backgroundColor: '#ffffff' // White background
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff',
+        width: 1280,
+        windowWidth: 1280
     }).then(canvas => {
         try {
             // Create a temporary link to download the image
@@ -519,10 +604,18 @@ function saveAsImage() {
             console.error('Error creating download link:', error);
             alert('Error saving image. Please try again.');
         } finally {
+            // Restore original container width
+            container.style.width = originalWidth;
+            // Restore original scroll position
+            window.scrollTo(0, originalScroll);
             overlay.classList.add('hidden');
         }
     }).catch(error => {
         console.error('Error generating image:', error);
+        // Restore original container width
+        container.style.width = originalWidth;
+        // Restore original scroll position
+        window.scrollTo(0, originalScroll);
         overlay.classList.add('hidden');
         alert('Error generating image. Please try again.');
     });
@@ -534,4 +627,34 @@ document.addEventListener('DOMContentLoaded', function() {
     if (exportButton) {
         exportButton.addEventListener('click', saveAsImage);
     }
-}); 
+});
+
+function createNumberPads() {
+    // Create SI number buttons
+    const siGrid = document.querySelector('.si-grid');
+    siGrid.innerHTML = ''; // Clear existing buttons
+    for (let i = 1; i <= 18; i++) {
+        const button = document.createElement('button');
+        button.className = 'number-button';
+        button.dataset.number = i;
+        button.innerHTML = `
+            <span class="number">${i}</span>
+            <span class="par-label">SI</span>
+        `;
+        siGrid.appendChild(button);
+    }
+
+    // Create gross score number buttons
+    const grossGrid = document.querySelector('.gross-grid');
+    grossGrid.innerHTML = ''; // Clear existing buttons
+    for (let i = 1; i <= 10; i++) {
+        const button = document.createElement('button');
+        button.className = 'number-button';
+        button.dataset.number = i;
+        button.innerHTML = `
+            <span class="number">${i}</span>
+            <span class="par-label">SCORE</span>
+        `;
+        grossGrid.appendChild(button);
+    }
+} 

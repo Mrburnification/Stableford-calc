@@ -467,4 +467,215 @@ button, select {
 
 .hidden {
     display: none;
+}
+
+/* Number Selection Interface */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.number-pad {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--input-bg);
+    border-radius: 25px 25px 0 0;
+    padding: 30px 20px 40px;
+    z-index: 1001;
+    transform: translateY(100%);
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.number-pad.active {
+    transform: translateY(0);
+}
+
+.number-pad-header {
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.drag-handle {
+    width: 40px;
+    height: 4px;
+    background: var(--border-color);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+}
+
+.number-pad-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--main-header-bg);
+    margin-bottom: 10px;
+}
+
+/* Theme-specific text colors for number pad titles */
+body.dark .number-pad-title {
+    color: #ffffff;
+}
+
+body.modern .number-pad-title {
+    color: #ffffff;
+}
+
+body.sporty .number-pad-title {
+    color: #ffffff;
+}
+
+.numbers-grid {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.number-button {
+    width: 90px;
+    height: 90px;
+    border: none;
+    border-radius: 20px;
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    gap: 2px;
+}
+
+.number-button .number {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.number-button .par-label {
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.8;
+    letter-spacing: 1px;
+}
+
+/* SI Grid Layout */
+.si-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    padding: 0 10px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.si-grid .number-button {
+    width: 100%;
+    height: 60px;
+    font-size: 20px;
+    border-radius: 12px;
+}
+
+.si-grid .number-button .number {
+    font-size: 24px;
+}
+
+.si-grid .number-button .par-label {
+    font-size: 10px;
+}
+
+/* Gross Score Grid Layout */
+.gross-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    padding: 0 10px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.gross-grid .number-button {
+    width: 100%;
+    height: 70px;
+    font-size: 24px;
+    border-radius: 12px;
+}
+
+.gross-grid .number-button .number {
+    font-size: 28px;
+}
+
+.gross-grid .number-button .par-label {
+    font-size: 11px;
+}
+
+/* Theme-specific styles */
+body.classic .number-button:nth-child(4n+1) { background: linear-gradient(135deg, #ff6b6b, #ff8e8e); }
+body.classic .number-button:nth-child(4n+2) { background: linear-gradient(135deg, #4ecdc4, #44a08d); }
+body.classic .number-button:nth-child(4n+3) { background: linear-gradient(135deg, #45b7d1, #96c93d); }
+body.classic .number-button:nth-child(4n+4) { background: linear-gradient(135deg, #a17fe0, #5d26c1); }
+
+body.modern .number-button:nth-child(4n+1) { background: linear-gradient(135deg, #3498db, #2980b9); }
+body.modern .number-button:nth-child(4n+2) { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+body.modern .number-button:nth-child(4n+3) { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+body.modern .number-button:nth-child(4n+4) { background: linear-gradient(135deg, #f1c40f, #f39c12); }
+
+body.dark .number-button:nth-child(4n+1) { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+body.dark .number-button:nth-child(4n+2) { background: linear-gradient(135deg, #3498db, #2980b9); }
+body.dark .number-button:nth-child(4n+3) { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+body.dark .number-button:nth-child(4n+4) { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
+
+body.sporty .number-button:nth-child(4n+1) { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+body.sporty .number-button:nth-child(4n+2) { background: linear-gradient(135deg, #f1c40f, #f39c12); }
+body.sporty .number-button:nth-child(4n+3) { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+body.sporty .number-button:nth-child(4n+4) { background: linear-gradient(135deg, #3498db, #2980b9); }
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .si-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+
+    .si-grid .number-button {
+        height: 50px;
+    }
+
+    .si-grid .number-button .number {
+        font-size: 20px;
+    }
+
+    .gross-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+    }
+
+    .gross-grid .number-button {
+        height: 60px;
+    }
+
+    .gross-grid .number-button .number {
+        font-size: 24px;
+    }
 } 
