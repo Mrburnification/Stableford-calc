@@ -143,11 +143,11 @@ function createScoreTable() {
         const tr = document.createElement('tr');
         let rowHtml = `
             <td><strong>${hole + 1}</strong></td>
-            <td><input type="number" min="3" max="6" 
+            <td><input type="text" readonly
                  class="par" data-hole="${hole}" 
                  value="${state.pars[hole] || ''}" 
                  placeholder="Par"></td>
-            <td><input type="number" min="1" max="18" 
+            <td><input type="text" readonly
                  class="stroke-index" data-hole="${hole}" 
                  value="${state.strokeIndexes[hole] || ''}" 
                  placeholder="SI"></td>
@@ -155,7 +155,7 @@ function createScoreTable() {
         
         // Gross score inputs
         for (let p = 0; p < state.playerCount; p++) {
-            rowHtml += `<td><input type="number" min="1" max="12" 
+            rowHtml += `<td><input type="text" readonly
                  data-hole="${hole}" data-player="${p}" 
                  class="gross" value="${(state.scores[hole] && state.scores[hole][p]) || ''}"></td>`;
         }
